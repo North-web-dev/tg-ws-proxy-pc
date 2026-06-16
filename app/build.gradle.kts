@@ -11,28 +11,41 @@ android {
 
     defaultConfig {
         applicationId = "com.amurcanov.tgwsproxy"
-        minSdk = 24
         targetSdk = 35
-        versionCode = 121
-        versionName = "1.2.1"
+        versionCode = 122
+        versionName = "1.2.2"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary = true
         }
-        
-        ndk {
-            abiFilters.addAll(listOf("arm64-v8a", "armeabi-v7a"))
-        }
     }
 
-    // ABI splits: produce separate APKs per architecture + universal
-    splits {
-        abi {
-            isEnable = true
-            reset()
-            include("arm64-v8a", "armeabi-v7a")
-            isUniversalApk = true  // Universal APK with all architectures
+    flavorDimensions.add("arch")
+    productFlavors {
+        create("arm32") {
+            dimension = "arch"
+            minSdk = 21
+            ndk {
+                abiFilters.clear()
+                abiFilters.add("armeabi-v7a")
+            }
+        }
+        create("arm64") {
+            dimension = "arch"
+            minSdk = 24
+            ndk {
+                abiFilters.clear()
+                abiFilters.add("arm64-v8a")
+            }
+        }
+        create("universal") {
+            dimension = "arch"
+            minSdk = 21
+            ndk {
+                abiFilters.clear()
+                abiFilters.addAll(listOf("arm64-v8a", "armeabi-v7a"))
+            }
         }
     }
 
@@ -108,7 +121,7 @@ android {
     }
     sourceSets {
         getByName("main") {
-            jniLibs.setSrcDirs(listOf("src/main/jniLibs"))
+            jniLibs.srcDirs("src/main/jniLibs")
         }
     }
 }

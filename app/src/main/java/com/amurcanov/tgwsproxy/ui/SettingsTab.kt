@@ -242,8 +242,8 @@ fun SettingsTab(settingsStore: SettingsStore) {
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Uri)
                         )
                         
-                        Divider(
-                            modifier = Modifier.fillMaxHeight().width(1.dp).padding(vertical = 8.dp),
+                        VerticalDivider(
+                            modifier = Modifier.fillMaxHeight().padding(vertical = 8.dp),
                             color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f)
                         )
                         

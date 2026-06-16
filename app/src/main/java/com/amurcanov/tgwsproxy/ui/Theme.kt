@@ -256,10 +256,14 @@ fun TgWsProxyTheme(
             } else {
                 lerp(colorScheme.background, colorScheme.surface, 0.55f)
             }
+            @Suppress("DEPRECATION")
             window.statusBarColor = Color.Transparent.toArgb()
+            @Suppress("DEPRECATION")
             window.navigationBarColor = navigationBarColor.toArgb()
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                @Suppress("DEPRECATION")
                 window.isNavigationBarContrastEnforced = false
+                @Suppress("DEPRECATION")
                 window.isStatusBarContrastEnforced = false
             }
             WindowCompat.getInsetsController(window, view).apply {

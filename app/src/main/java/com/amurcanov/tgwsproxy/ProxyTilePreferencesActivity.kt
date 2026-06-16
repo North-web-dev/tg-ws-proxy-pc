@@ -28,6 +28,11 @@ class ProxyTilePreferencesActivity : Activity() {
             }
         )
         finish()
-        overridePendingTransition(0, 0)
+        if (android.os.Build.VERSION.SDK_INT >= 34) {
+            overrideActivityTransition(Activity.OVERRIDE_TRANSITION_CLOSE, 0, 0)
+        } else {
+            @Suppress("DEPRECATION")
+            overridePendingTransition(0, 0)
+        }
     }
 }
