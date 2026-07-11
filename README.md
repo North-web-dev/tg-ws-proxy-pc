@@ -1,5 +1,11 @@
 # tg-ws-proxy-pc
 
+[![build](https://github.com/North-web-dev/tg-ws-proxy-pc/actions/workflows/build.yml/badge.svg)](https://github.com/North-web-dev/tg-ws-proxy-pc/actions/workflows/build.yml)
+[![release](https://img.shields.io/github/v/release/North-web-dev/tg-ws-proxy-pc?sort=semver)](https://github.com/North-web-dev/tg-ws-proxy-pc/releases)
+[![license](https://img.shields.io/badge/license-GPL--3.0-blue)](LICENSE)
+[![platforms](https://img.shields.io/badge/platforms-Windows%20%7C%20Linux%20%7C%20macOS-informational)](#install)
+[![rust](https://img.shields.io/badge/rust-1.75%2B-000000?logo=rust)](https://rustup.rs)
+
 **Desktop edition** (Windows / Linux / macOS) of the [tg-ws-proxy][upstream]
 MTProto proxy for Telegram. It runs a local proxy on your machine and tunnels
 Telegram's traffic over Cloudflare WebSocket connections, which helps Telegram
