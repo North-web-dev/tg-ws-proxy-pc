@@ -1,0 +1,34 @@
+tg-ws-proxy-pc
+==============
+
+A desktop (Windows / Linux / macOS) edition of the tg-ws-proxy MTProto proxy
+for Telegram. Distributed under the GNU General Public License v3.0 — see
+LICENSE.
+
+Lineage
+-------
+
+  Flowseal/tg-ws-proxy            original project, MIT License
+    └─ amurcanov/tg-ws-proxy-android   Android port + Rust engine, GPL-3.0
+         └─ North-web-dev/tg-ws-proxy-pc   this repository — desktop CLI + GUI
+
+This repository is a fork of amurcanov/tg-ws-proxy-android and inherits its
+GPL-3.0 license. The Rust proxy engine (src/proxy.rs, ws.rs, cfproxy.rs,
+crypto.rs, balancer.rs, config.rs) originates upstream and is reused unchanged.
+
+Changes made in this fork
+-------------------------
+
+  * Added a native Rust API (src/runner.rs) around the engine so desktop
+    front-ends drive it directly instead of through the Android JNI C ABI.
+  * Added a headless CLI front-end (src/bin/cli.rs).
+  * Added a GUI front-end using egui/eframe (src/bin/gui.rs).
+  * Reworked the crate as a library + two binaries; kept the `cdylib` target
+    so the original Android/JNI build path still links.
+  * Removed Android-only build tooling (Gradle project, JNI shims, legacy Go).
+
+Trademarks
+----------
+
+Telegram and Cloudflare are trademarks of their respective owners. This project
+is not affiliated with, endorsed by, or sponsored by either.

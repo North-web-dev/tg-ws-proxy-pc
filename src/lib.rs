@@ -4,6 +4,7 @@ pub mod crypto;
 pub mod proxy;
 pub mod ws;
 pub mod balancer;
+pub mod runner;
 
 use config::*;
 use once_cell::sync::OnceCell;
