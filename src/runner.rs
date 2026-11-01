@@ -26,7 +26,9 @@ pub struct ProxyConfig {
     /// routing and cannot interfere with a VPN or expose itself to the LAN.
     pub host: String,
     pub port: u16,
-    /// 32 hex chars (16 bytes). Empty ⇒ a random one is generated.
+    /// 32 hex chars (16 bytes). A leading `dd` (as shown in `tg://` links) is
+    /// accepted and stripped. Empty ⇒ a random one is generated. Any other
+    /// value makes [`start`] fail with `InvalidInput`.
     pub secret: String,
     /// Optional DC IP overrides as a CIDR pool string (see `parse_cidr_pool`).
     pub dc_ips: String,
@@ -139,15 +141,40 @@ fn valid_secret(s: &str) -> bool {
     s.len() == 32 && hex::decode(s).is_ok()
 }
 
+/// Normalize a user-supplied secret: trim, lowercase, and strip the `dd`
+/// prefix that appears in `tg://` links. Returns `None` if the result is not
+/// exactly 32 hex characters.
+pub fn normalize_secret(input: &str) -> Option<String> {
+    let s = input.trim().to_ascii_lowercase();
+    let s = if s.len() == 34 && s.starts_with("dd") {
+        s[2..].to_string()
+    } else {
+        s
+    };
+    if valid_secret(&s) {
+        Some(s)
+    } else {
+        None
+    }
+}
+
 /// Start a proxy instance. Blocks only until the listener is bound (so a
 /// returned `Ok` means the port is actually accepting connections), then the
 /// engine runs on its own runtime threads.
 pub fn start(mut cfg: ProxyConfig) -> std::io::Result<RunningProxy> {
     init_logging(cfg.verbose);
 
-    // Secret: use the caller's if valid, otherwise mint one.
-    if !valid_secret(&cfg.secret) {
+    // Secret: empty ⇒ mint one; otherwise it must be valid (no silent
+    // replacement, so a typo is reported instead of changing the secret).
+    if cfg.secret.trim().is_empty() {
         cfg.secret = gen_secret();
+    } else {
+        cfg.secret = normalize_secret(&cfg.secret).ok_or_else(|| {
+            std::io::Error::new(
+                std::io::ErrorKind::InvalidInput,
+                "secret must be exactly 32 hex characters (optionally prefixed with `dd`)",
+            )
+        })?;
     }
     *PROXY_SECRET.write() = cfg.secret.clone();
 
