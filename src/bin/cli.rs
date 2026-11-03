@@ -20,9 +20,10 @@ struct Args {
     #[arg(long, default_value_t = 1443)]
     port: u16,
 
-    /// 32-hex-char MTProto secret. Omit to generate a random one.
-    #[arg(long, default_value = "")]
-    secret: String,
+    /// MTProto secret: 32 hex chars (optional `dd` prefix) or a path to a file
+    /// containing one. Omit to generate a random one.
+    #[arg(long, value_name = "SECRET|FILE", value_parser = parse_secret)]
+    secret: Option<String>,
 
     /// Cloudflare-WS domain override (advanced; blank = auto pool).
     #[arg(long, default_value = "")]
@@ -53,6 +54,26 @@ struct Args {
     stats_interval: u64,
 }
 
+fn parse_secret(input: &str) -> Result<String, String> {
+    // Сначала как hex: 32 символа не путаются с путём к файлу.
+    if let Some(s) = tgwsproxy::runner::normalize_secret(input) {
+        return Ok(s);
+    }
+    // Иначе как путь к файлу.
+    let path = std::path::Path::new(input.trim());
+    if path.is_file() {
+        let content = std::fs::read_to_string(path)
+            .map_err(|e| format!("cannot read secret file {}: {e}", path.display()))?;
+        return tgwsproxy::runner::normalize_secret(&content).ok_or_else(|| {
+            format!(
+                "{} must contain exactly 32 hex characters (optionally prefixed with `dd`)",
+                path.display()
+            )
+        });
+    }
+    Err("secret must be 32 hex characters (optionally prefixed with `dd`) or a path to a file containing one".to_string())
+}
+
 fn main() {
     let args = Args::parse();
     let cf_enabled = !args.no_cf;
@@ -60,7 +81,7 @@ fn main() {
     let cfg = ProxyConfig {
         host: args.host,
         port: args.port,
-        secret: args.secret,
+        secret: args.secret.unwrap_or_default(),
         dc_ips: args.dc_ips,
         cf_enabled,
         cf_domain: args.cf_domain,
