@@ -123,6 +123,35 @@ just the binary and glibc.
 </details>
 
 <details>
+<summary>Binary cache (skip building from source)</summary>
+
+Prebuilt packages are available from Cachix. With the flake's NixOS module or in
+`configuration.nix`:
+
+```nix
+nix.settings = {
+  substituters = [
+    "https://santg3ar1a.cachix.org"
+  ];
+  trusted-public-keys = [
+    "santg3ar1a.cachix.org-1:fFHsUyTT2bX0OcS+vF3FPPULqZJlFI1B9E2gZcGjxGs="
+  ];
+};
+```
+
+On non-NixOS, add to `/etc/nix/nix.conf`:
+
+```ini
+extra-substituters = https://santg3ar1a.cachix.org
+extra-trusted-public-keys = santg3ar1a.cachix.org-1:fFHsUyTT2bX0OcS+vF3FPPULqZJlFI1B9E2gZcGjxGs=
+```
+
+Apply the cache settings (`nixos-rebuild switch`) **before** installing the
+package, otherwise Nix will build it locally.
+
+</details>
+
+<details>
 <summary>NixOS module (flake-based configuration)</summary>
 
 Add the flake as an input and import the module:
